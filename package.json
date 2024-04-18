@@ -1,0 +1,15 @@
+{
+  "name": "api-build",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "yml": "node scripts/yaml.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "yaml": "^2.4.1"
+  }
+}

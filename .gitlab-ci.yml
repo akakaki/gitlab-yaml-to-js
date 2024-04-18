@@ -1,0 +1,37 @@
+stages:
+  - build
+
+image: node:latest
+
+variables:
+  USER_NAME: "amu"
+  USER_EMAIL: "amu@amu.com"
+
+build:
+  stage: build
+  script:
+    - |
+      apt-get update && apt-get install git -y
+      git config --global user.name $USER_NAME
+      git config --global user.email $USER_EMAIL
+      npm install
+      git clone "https://${GITLwqAB_USERNAME}:${GITLAB_TOKEN}@gitlab.com/apidoc.git"
+      git clone "https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@gitlab.com/backstage.git"
+      cd backstage
+      if [[ -z $(git branch -r --list origin/amu/update-api) ]]; then
+        git checkout -b amu/update-api
+      else
+        git branch amu/update-api
+        git checkout amu/update-api
+        git pull origin amu/update-api
+      fi
+      cd ..
+      npm run yml ./apidoc/api/swagger.yaml
+      mv ./index.js ./backstage/src/api/index.js
+      cd backstage
+      if [[ ! -z $(git status --porcelain) ]]; then
+        git add .
+        git commit -m "${CI_COMMIT_SHORT_SHA}"
+        git push -o merge_request.create -o merge_request.title="[Feature] API 相關更新" origin amu/update-api
+      fi
+
